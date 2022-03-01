@@ -10,6 +10,7 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'slug'];
+    protected $allowIncluded = ['posts', 'posts.user'];
 
     //Relación uno a muchos
     public function posts()
@@ -19,7 +20,23 @@ class Category extends Model
 
     public function scopeIncluded(Builder $query)
     {
+
+        if(empty($this->allowIncluded) || empty(request('included')))
+        {
+            return;
+        }
+
         $relations = explode(',', request('included')); // ['posts','relacion']
+
+        $allowIncluded = collect($this->allowIncluded);
+
+        foreach($relations as $key => $relationship){
+            if(!$allowIncluded->contains($relationship))
+            {
+                unset($relations[$key]);
+            }
+        }
+
         $query->with($relations);
     }
 }
