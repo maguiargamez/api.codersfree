@@ -33,6 +33,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        return auth()->user();
         $data = $request->validate([
             'name'=> 'required|max:250',
             'slug'=> 'required|max:255|unique:posts',
